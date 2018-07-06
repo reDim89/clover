@@ -1,0 +1,41 @@
+{
+  "name": "clover",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest"
+  },
+  "dependencies": {
+    "aws-amplify": "^0.3.3",
+    "aws-amplify-react-native": "^0.2.9",
+    "npm": "^6.1.0",
+    "prop-types": "^15.6.1",
+    "react": "^16.4.0",
+    "react-native": "^0.55.4",
+    "react-native-maps": "^0.21.0",
+    "react-navigation": "^2.0.4",
+    "react-navigation-redux-helpers": "^1.1.1",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.2.0",
+    "update": "^0.7.4"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.3",
+    "babel-jest": "^22.4.3",
+    "babel-preset-react-native": "4.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-react-native": "^2.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.8.1",
+    "jest": "^22.4.3",
+    "react-test-renderer": "^16.3.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
