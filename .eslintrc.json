@@ -1,4 +1,8 @@
 {
+    "globals":
+      {
+        "fetch": false
+      },
     "env": {
         "node": true,
         "browser": false,

@@ -14,16 +14,17 @@ import {
 } from 'react-native';
 
 import PropTypes from 'prop-types';
-import { NavigationActions } from 'react-navigation'
-
-// Импорт экшна скрытия и функции для подключения контейнера к стору
+import { NavigationActions } from 'react-navigation';
 import { connect } from 'react-redux';
-import { closePopup } from '../redux/actions/popupActions';
-import { login } from '../redux/actions/authActions';
 
 // Импорт компонентов, необходимых для регистрации юзеров
 import Amplify, { Auth } from 'aws-amplify';
 import config from '../../aws-exports';
+
+
+// Импорт экшна скрытия и функции для подключения контейнера к стору
+import { closePopup } from '../redux/actions/popupActions';
+import { login } from '../redux/actions/authActions';
 
 Amplify.configure(config);
 
@@ -92,7 +93,7 @@ class ModalConfirm extends Component {
               onChangeText={text => this.setState({ authCode: text })}
             />
             <Text style={styles.hintText}>
-                {this.props.hintText}
+              {this.props.hintText}
             </Text>
             <Button
               title="Confirm sign up"
