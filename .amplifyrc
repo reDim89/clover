@@ -1,0 +1,14 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "clover-20180920151034-authRole",
+            "UnauthRoleArn": "arn:aws:iam::501602124869:role/clover-20180920151034-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::501602124869:role/clover-20180920151034-authRole",
+            "Region": "us-east-2",
+            "DeploymentBucketName": "clover-20180920151034-deployment",
+            "UnauthRoleName": "clover-20180920151034-unauthRole",
+            "StackName": "clover-20180920151034",
+            "StackId": "arn:aws:cloudformation:us-east-2:501602124869:stack/clover-20180920151034/2dcaa420-bcce-11e8-9db8-063ebf2048ea"
+        }
+    }
+}

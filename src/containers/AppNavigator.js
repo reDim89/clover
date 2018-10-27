@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { Auth } from 'aws-amplify';
 import { StatusBar } from 'react-native';
 
 import Profile from './Profile';
-import Map from './MapView';
 import SignUp from './SignUp';
 import Welcome from './Welcome';
+import Map from './Map';
 
 // Основной стек навигации
-export const NavigationStack = createStackNavigator({
+export const NavigationStack = createBottomTabNavigator({
   Map: {
     screen: Map,
   },
@@ -24,16 +24,21 @@ export const LoginStack = createStackNavigator(
   {
     Welcome: {
       screen: Welcome,
+      navigationOptions: {
+        header: null,
+      },
     },
     SignUp: {
       screen: SignUp,
     },
     NavigationStack: {
       screen: NavigationStack,
+      navigationOptions: {
+        header: null,
+      },
     },
-  },
-  {
     initialRouteName: 'Welcome',
+    headerMode: 'screen',
   },
 );
 
@@ -63,15 +68,13 @@ class AppNavigator extends Component {
   }
 
   render() {
-    console.log(this.props);
     if (this.state.isLoading) return null;
-
-    let loggenIn = false;
+    let loggedIn = false;
     if (this.state.user.username) {
-      loggenIn = true;
+      loggedIn = true;
     }
 
-    if (this.props.auth) {
+    if (!this.props.auth) {
       return (
         <NavigationStack />
       );

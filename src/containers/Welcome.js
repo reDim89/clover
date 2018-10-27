@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+
+import { NavigationActions } from 'react-navigation';
 
 import Button from '../components/Button';
 
 class Welcome extends Component {
-  static navigationOptions = {
-    header: null,
-  };
 
   render() {
+    console.log(this.props);
     return (
       <View style={styles.containerStyle}>
         <Text style={styles.headerTextStyle}>
@@ -16,6 +21,7 @@ class Welcome extends Component {
         </Text>
         <Button
           buttonText="Sign In"
+          onPress={() => this.props.navigation.dispatch(goToMainStack)}
         />
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate('SignUp')}
@@ -28,6 +34,11 @@ class Welcome extends Component {
     )
   }
 }
+
+const goToMainStack = NavigationActions.navigate({
+  routeName: 'NavigationStack',
+  action: NavigationActions.navigate({ routeName: 'NavigationStack' }),
+});
 
 const styles = StyleSheet.create({
   containerStyle: {

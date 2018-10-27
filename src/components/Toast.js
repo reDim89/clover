@@ -35,7 +35,7 @@ const Toast = (props) => {
 };
 
 Toast.propTypes = {
-  animateOpacityValue: PropTypes.number,
+  animateOpacityValue: PropTypes.any,
   position: PropTypes.oneOf(['top', 'bottom']),
   backgroundColor: PropTypes.string,
   textColor: PropTypes.string,

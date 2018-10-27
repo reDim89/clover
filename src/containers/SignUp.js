@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 // Импорт компонентов, необходимых для регистрации юзеров
 import Amplify, { Auth } from 'aws-amplify';
@@ -17,82 +18,123 @@ import ModalConfirm from './ModalConfirm';
 import ToastContainer from './ToastContainer';
 
 // Импорт экшнов, которые отправляются в стор с данного компонента
-import { userLogin, userLogout } from '../redux/actions/userActions';
+import { login, logout } from '../redux/actions/authActions';
 import { showPopup } from '../redux/actions/popupActions';
 import { showToast } from '../redux/actions/toastActions';
 
 Amplify.configure(config);
 
 class SignUp extends Component {
-  constructor() {
-    super();
+  static navigationOptions = {
+    title: 'Sign Up',
+    headerStyle: {
+      backgroundColor: '#94DCD4',
+      color: '#fff',
+    },
+    headerTintColor: '#fff',
+  };
+
+  constructor(props) {
+    super(props);
     this.state = {
       username: null,
       password: null,
-      phone: null,
       email: null,
     };
   }
 
   // Вызов поп-апа подтверждения регистрации
-  handleOnPress() {
+  showModalConfirm() {
+    const {
+      username,
+      firstname,
+      lastname,
+      password,
+      email,
+    } = this.state;
     Auth.signUp({
-      username: this.state.username,
-      password: this.state.password,
+      username,
+      password,
       attributes: {
-        phone_number: this.state.phone,
-        email: this.state.email,
+        email,
       },
     })
-      .then(() => this.props.showPopup())
-      .catch(err => this.props.showToast(err, 2000));
-
+      .then(() => {
+        this.props.showPopup();
+        this.pushToDatabase(username, firstname, lastname);
+        this.props.showPopup();
+      })
+      .catch(error => this.errorToast(error));
   }
 
-  // Показ тоста-нотификации
-  notify() {
-    this.props.showToast('default message', 2000);
+  errorToast(error) {
+    if (typeof error === 'object') {
+      return this.props.showToast(error.message, 2000)
+    }
+    return this.props.showToast(error, 2000)
   }
-
 
   render() {
+    const {
+      username,
+      firstname,
+      lastname,
+    } = this.state;
     return (
-      <View>
-        <ModalConfirm visible={this.props.visible} username={this.state.username} />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Login"
-          autoFocus
-          value={this.state.username}
-          onChangeText={text => this.setState({ username: text })}
+      <View style={styles.containerStyle}>
+        <ModalConfirm
+          visible={this.props.visible}
+          username={username}
+          firstname={firstname}
+          lastname={lastname}
+          hintText="We have sent confirmation code to your email"
+          navigation={this.props.navigation}
         />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Password"
-          secureTextEntry
-          value={this.state.password}
-          onChangeText={text => this.setState({ password: text })}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Phone"
-          value={this.state.phone}
-          onChangeText={text => this.setState({ phone: text })}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder="Email"
-          value={this.state.email}
-          onChangeText={text => this.setState({ email: text })}
-        />
-        <Button
-          buttonText={this.props.buttonText}
-          onPress={() => this.handleOnPress()}
-        />
-        <Button
-          buttonText="Show toast"
-          onPress={() => this.notify()}
-        />
+        <View style={styles.inputContainerStyle}>
+          <TextInput
+            style={styles.halfSizeInput}
+            placeholder="First name"
+            autoFocus
+            value={this.state.firstname}
+            onChangeText={text => this.setState({ firstname: text })}
+          />
+          <TextInput
+            style={styles.halfSizeInput}
+            placeholder="Last Name"
+            autoFocus
+            value={this.state.lastname}
+            onChangeText={text => this.setState({ lastname: text })}
+          />
+        </View>
+        <View style={styles.formContainerStyle}>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Login"
+            autoCapitalize="none"
+            autoFocus
+            value={this.state.username}
+            onChangeText={text => this.setState({ username: text })}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Password"
+            secureTextEntry
+            value={this.state.password}
+            onChangeText={text => this.setState({ password: text })}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="Email"
+            value={this.state.email}
+            onChangeText={text => this.setState({ email: text })}
+          />
+        </View>
+        <View style={styles.buttonContainerStyle}>
+          <Button
+            buttonText="Sign Up"
+            onPress={() => this.showModalConfirm()}
+          />
+        </View>
         <ToastContainer />
       </View>
     );
@@ -109,32 +151,56 @@ SignUp.defaultProps = {
 
 // Функция, которая маппит стэйты из стора Redux в пропсы контейнера
 // Они хранятся в this.props
-const mapStateToProps = (state) => {
-  return {
-    buttonText: state.authReducer.buttonText,
-    auth: state.authReducer.auth,
-    popup: state.popupReducer.visible,
-  };
-};
+const mapStateToProps = state => ({
+  buttonText: state.authReducer.buttonText,
+  auth: state.authReducer.auth,
+  popup: state.popupReducer.visible,
+});
+
 
 // Функция, которая маппит отправку конкретного экшна в пропсы контейнера
-// Это по сути шорт-кат, чтобы не писать везде dispatch
-function mapDispatchToProps(dispatch) {
-  return ({
-    login: () => dispatch(userLogin()),
-    logout: () => dispatch(userLogout()),
-    showPopup: () => dispatch(showPopup()),
-    showToast: (message, duration) => dispatch(showToast(message, duration)),
-  });
-}
+// Это по сути шорт-кат, чтобы не писать везде this.props.dispatch
+const mapDispatchToProps = dispatch => bindActionCreators({
+  login,
+  logout,
+  showPopup,
+  showToast,
+},
+dispatch);
+
 
 const styles = StyleSheet.create({
   textInput: {
-    margin: 15,
+    justifyContent: 'center',
+    margin: 10,
     height: 40,
-    borderColor: '#673149',
+    borderColor: '#7DA5A1',
     borderWidth: 2,
     borderRadius: 10,
+  },
+  halfSizeInput: {
+    justifyContent: 'center',
+    margin: 10,
+    height: 40,
+    width: 170,
+    borderColor: '#7DA5A1',
+    borderWidth: 2,
+    borderRadius: 10,
+  },
+  containerStyle: {
+    flex: 1,
+    backgroundColor: '#94DCD4',
+  },
+  formContainerStyle: {
+    flex: 0.7,
+  },
+  buttonContainerStyle: {
+    flex: 0.2,
+  },
+  inputContainerStyle: {
+    flex: 0.1,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
 });
 
