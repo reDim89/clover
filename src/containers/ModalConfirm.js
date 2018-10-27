@@ -1,6 +1,6 @@
 /*
 Всплывающее окно, появляющееся при подтверждении регистрации через смс.
-Состояние "показать/скрыть" управляется поп-ап редьюсером
+Состояние "показать/скрыть" управляется попап-редьюсером
 */
 
 import React, { Component } from 'react';
@@ -10,13 +10,16 @@ import {
   View,
   Button,
   StyleSheet,
+  Text,
 } from 'react-native';
 
 import PropTypes from 'prop-types';
+import { NavigationActions } from 'react-navigation'
 
 // Импорт экшна скрытия и функции для подключения контейнера к стору
 import { connect } from 'react-redux';
 import { closePopup } from '../redux/actions/popupActions';
+import { login } from '../redux/actions/authActions';
 
 // Импорт компонентов, необходимых для регистрации юзеров
 import Amplify, { Auth } from 'aws-amplify';
@@ -34,15 +37,43 @@ class ModalConfirm extends Component {
     visible: false,
   }
 
-  // Функци, скрывающая поп-ап по кнопке
+  // Запись данных формы в базу данных
+  // https://facebook.github.io/react-native/docs/network.html
+  static pushToDatabase(username, firstname, lastname) {
+    return fetch('http://52.15.80.99:8000/users', {
+      method: 'POST',
+      headers: {
+        ContentType: 'Application/JSON',
+      },
+      body: JSON.stringify({
+        nickname: username,
+        first_name: firstname,
+        last_name: lastname,
+      }),
+    })
+      .then(response => console.log(response.json()))
+      .catch(error => console.error(error));
+  }
+
+  // Функция, скрывающая поп-ап по кнопке
   closeModal() {
     return this.props.closePopup();
   }
 
+  // Подтверждение авторизации
   confirmSignup() {
     const { authCode } = this.state;
-    Auth.confirmSignUp(this.props.username, authCode)
-      .then(data => console.log(data), this.props.closePopup())
+    const {
+      username,
+      firstname,
+      lastname,
+    } = this.props;
+    Auth.confirmSignUp(username, authCode)
+      .then(() => {
+        ModalConfirm.pushToDatabase(username, firstname, lastname);
+        this.closeModal();
+        this.props.navigation.dispatch(goToMainStack);
+      })
       .catch(err => console.log(err));
   }
 
@@ -57,16 +88,20 @@ class ModalConfirm extends Component {
           <View style={styles.innerView}>
             <TextInput
               style={styles.textInput}
+              placeholder="Confirmation code"
               onChangeText={text => this.setState({ authCode: text })}
             />
+            <Text style={styles.hintText}>
+                {this.props.hintText}
+            </Text>
             <Button
               title="Confirm sign up"
-              color="#84c7da"
+              color="#fff"
               onPress={() => this.confirmSignup()}
             />
             <Button
               title="Close"
-              color="#84c7da"
+              color="#fff"
               onPress={() => this.closeModal()}
             />
           </View>
@@ -76,13 +111,20 @@ class ModalConfirm extends Component {
   }
 }
 
+const goToMainStack = NavigationActions.navigate({
+  routeName: 'NavigationStack',
+  action: NavigationActions.navigate({ routeName: 'NavigationStack' }),
+});
+
 const mapStateToProps = state => ({
   visible: state.popupReducer.visible,
+  auth: state.authReducer.auth,
 });
 
 function mapDispatchToProps(dispatch) {
   return ({
     closePopup: () => dispatch(closePopup()),
+    login: () => dispatch(login()),
   });
 }
 
@@ -97,10 +139,12 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   innerView: {
+    flex: 0.5,
+    flexDirection: 'column',
     justifyContent: 'center',
-    width: 300,
-    height: 300,
-    backgroundColor: '#fff',
+    alignItems: 'stretch',
+    backgroundColor: '#94DCD4',
+    borderRadius: 6,
   },
   textInput: {
     margin: 15,
@@ -108,6 +152,13 @@ const styles = StyleSheet.create({
     borderColor: '#673149',
     borderWidth: 2,
     borderRadius: 10,
+  },
+  hintText: {
+    flex: 0.1,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 20,
+    color: '#B2B2B2',
   },
 });
 
