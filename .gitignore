@@ -1,3 +1,7 @@
+# Security credentials
+#
+.env
+
 # OSX
 #
 .DS_Store

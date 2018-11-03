@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
-  View,
-  Text,
+//  View,
+//  Text,
 } from 'react-native';
 
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
+
+import { connect } from 'react-redux';
+
+import fetchMarkers from '../redux/actions/fetchMarkersActions';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,11 +26,58 @@ const SAMPLE_REGION = {
   longitudeDelta: LONGITUDE_DELTA,
 };
 
-const Map = () => (
-  <MapView
-    style={{ height: '100%', width: '100%' }}
-    initialRegion={SAMPLE_REGION}
-  />
-);
+const SAMPLE_PIN = {
+  latitude: 55.730149,
+  longitude: 37.567605,
+};
 
-export default Map;
+class Map extends Component {
+  constructor() {
+    super();
+    this.state = {
+      markers: [],
+    };
+  }
+
+  componentDidMount() {
+    this.props.fetchMarkers();
+  }
+
+  renderMarkers() {
+    return this.props.markers.map(marker => (
+      <Marker
+        coordinate={{
+          latitude: marker.venue.location.lat,
+          longitude: marker.venue.location.lng,
+        }}
+        title={marker.venue.name}
+      />
+    ));
+  }
+
+  render() {
+    return (
+      <MapView
+        style={{ height: '100%', width: '100%' }}
+        initialRegion={SAMPLE_REGION}
+      >
+        <Marker
+          coordinate={SAMPLE_PIN}
+          title="Luch"
+          description="Posh bar with a long bar stand"
+        />
+        {this.renderMarkers()}
+      </MapView>
+    );
+  }
+}
+
+const mapStateToProps = state => ({
+  markers: state.fetchMarkersReducer.markers,
+});
+
+const mapDispatchToProps = dispatch => ({
+  fetchMarkers: () => dispatch(fetchMarkers()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
