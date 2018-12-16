@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
-//  View,
-//  Text,
 } from 'react-native';
 
 import MapView, { Marker } from 'react-native-maps';
@@ -14,58 +12,60 @@ import fetchMarkers from '../redux/actions/fetchMarkersActions';
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 55.75222;
-const LONGITUDE = 37.61556;
-const LATITUDE_DELTA = 0.0922;
+const LATITUDE_DELTA = 0.0411;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-const SAMPLE_REGION = {
-  latitude: LATITUDE,
-  longitude: LONGITUDE,
-  latitudeDelta: LATITUDE_DELTA,
-  longitudeDelta: LONGITUDE_DELTA,
-};
-
-const SAMPLE_PIN = {
-  latitude: 55.730149,
-  longitude: 37.567605,
-};
 
 class Map extends Component {
   constructor() {
     super();
     this.state = {
       markers: [],
+      LATITUDE: 0,
+      LONGITUDE: 0,
     };
   }
 
+  // После первого рендера компонента отправляем экшн получения маркеров
+  // и сохранения их в стейт приложения (т.е. в стор)
   componentDidMount() {
     this.props.fetchMarkers();
+    navigator.geolocation.getCurrentPosition(
+      ((position) => {
+        this.setState({
+          LATITUDE: position.coords.latitude,
+          LONGITUDE: position.coords.longitude,
+        });
+      }),
+      error => console.log(error.message),
+    );
   }
 
   renderMarkers() {
-    return this.props.markers.map(marker => (
+    const { markers } = this.props;
+    return markers.map(marker => (
       <Marker
         coordinate={{
-          latitude: marker.venue.location.lat,
-          longitude: marker.venue.location.lng,
+          latitude: marker.lat,
+          longitude: marker.lng,
         }}
-        title={marker.venue.name}
+        title={marker.name}
       />
     ));
   }
 
   render() {
+    const { LATITUDE, LONGITUDE } = this.state;
     return (
       <MapView
         style={{ height: '100%', width: '100%' }}
-        initialRegion={SAMPLE_REGION}
+        region={{
+          latitude: LATITUDE,
+          longitude: LONGITUDE,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }}
+        showsUserLocation
       >
-        <Marker
-          coordinate={SAMPLE_PIN}
-          title="Luch"
-          description="Posh bar with a long bar stand"
-        />
         {this.renderMarkers()}
       </MapView>
     );

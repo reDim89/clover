@@ -1,3 +1,7 @@
+/*
+  Редьюсер, который записывает в стейт приложения маркеры из ответа API Foursquare
+*/
+
 // const FETCHING_MARKERS = 'FETCHING_MARKERS';
 const FETCH_SUCCESS = 'FETCH_SUCCESS';
 const FETCH_FAILURE = 'FETCH_FAILURE';
