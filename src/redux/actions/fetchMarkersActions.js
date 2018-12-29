@@ -29,15 +29,15 @@ function getMarkersFailure(err) {
   };
 }
 
-// Основная функция, которая сначала отправляет экшн ожидания,
-// чтобы можно было крутить спиннеры
-export default function fetchMarkers() {
+// Основная функция
+export default function fetchMarkers(ll) {
   return (dispatch) => {
+    // Cначала отправляет экшн ожидания, чтобы можно было крутить спиннеры
     dispatch(getMarkers());
-
+    // Далее происходит получение маркеров по параметру latlng
     return (fetch('https://clover-moscow.herokuapp.com/bars?'
            + 'limit=10&'
-           + 'll=55.73879,37.57097')
+           + `ll=${ll}`)
       .then(response => response.json())
       .then(json => dispatch(getMarkersSuccess(json)))
       .catch(err => dispatch(getMarkersFailure(err))));

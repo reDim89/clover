@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
   Dimensions,
+  Text,
 } from 'react-native';
 
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Callout } from 'react-native-maps';
 
 import { connect } from 'react-redux';
 
@@ -25,16 +26,17 @@ class Map extends Component {
     };
   }
 
-  // После первого рендера компонента отправляем экшн получения маркеров
-  // и сохранения их в стейт приложения (т.е. в стор)
+  // После первого рендера компонента определяем геолокацию и записываем в стейт
   componentDidMount() {
-    this.props.fetchMarkers();
     navigator.geolocation.getCurrentPosition(
       ((position) => {
         this.setState({
           LATITUDE: position.coords.latitude,
           LONGITUDE: position.coords.longitude,
         });
+        // Получаем ближайшие маркеры
+        const ll = `${this.state.LATITUDE},${this.state.LONGITUDE}`;
+        this.props.fetchMarkers(ll);
       }),
       error => console.log(error.message),
     );
@@ -49,7 +51,16 @@ class Map extends Component {
           longitude: marker.lng,
         }}
         title={marker.name}
-      />
+      >
+        <Callout>
+          <Text>
+            {marker.name}
+          </Text>
+          <Text>
+            {marker.address}
+          </Text>
+        </Callout>
+      </Marker>
     ));
   }
 
@@ -77,7 +88,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchMarkers: () => dispatch(fetchMarkers()),
+  fetchMarkers: ll => dispatch(fetchMarkers(ll)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
