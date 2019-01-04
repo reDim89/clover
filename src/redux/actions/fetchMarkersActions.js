@@ -2,22 +2,18 @@
   Файл с экшнами для получения списка маркеров по API
 */
 
-import Config from 'react-native-config';
-
-
 const FETCHING_MARKERS = 'FETCHING_MARKERS';
 const FETCH_SUCCESS = 'FETCH_SUCCESS';
 const FETCH_FAILURE = 'FETCH_FAILURE';
 
 // Экшн для показа спиннера
 function getMarkers() {
-  console.log(Config);
   return {
     type: FETCHING_MARKERS,
   };
 }
 
-// Экшн для успешного отображения данных
+// Экшн для успешного отображения данных списка маркеров
 function getMarkersSuccess(payload) {
   return {
     type: FETCH_SUCCESS,
@@ -25,7 +21,7 @@ function getMarkersSuccess(payload) {
   };
 }
 
-// Экшн для отображения ошибки
+// Экшн для отображения ошибки получения списка маркеров
 function getMarkersFailure(err) {
   return {
     type: FETCH_FAILURE,
@@ -33,18 +29,17 @@ function getMarkersFailure(err) {
   };
 }
 
-// Основная функция, которая сначала отправляет экшн ожидания,
-// чтобы можно было крутить спиннеры
-export default function fetchMarkers() {
+// Функция для получения списка маркеров
+export default function fetchMarkers(ll) {
   return (dispatch) => {
+    // Cначала отправляет экшн ожидания, чтобы можно было крутить спиннеры
     dispatch(getMarkers());
-
-    return (fetch('https://api.foursquare.com/v2/venues/explore?'
-           + `client_id=${Config.CLIENT_ID}&`
-           + `client_secret=${Config.CLIENT_SECRET}&`
-           + 'v=20181103&ll=55.730149,37.61556&section=drinks&limit=10')
+    // Далее происходит получение маркеров по параметру latlng
+    return (fetch('https://clover-moscow.herokuapp.com/bars?'
+           + 'limit=10&'
+           + `ll=${ll}`)
       .then(response => response.json())
-      .then(json => dispatch(getMarkersSuccess(json.response.groups[0].items)))
+      .then(json => dispatch(getMarkersSuccess(json)))
       .catch(err => dispatch(getMarkersFailure(err))));
   };
 }
