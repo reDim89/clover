@@ -13,7 +13,7 @@ function getMarkers() {
   };
 }
 
-// Экшн для успешного отображения данных
+// Экшн для успешного отображения данных списка маркеров
 function getMarkersSuccess(payload) {
   return {
     type: FETCH_SUCCESS,
@@ -21,7 +21,7 @@ function getMarkersSuccess(payload) {
   };
 }
 
-// Экшн для отображения ошибки
+// Экшн для отображения ошибки получения списка маркеров
 function getMarkersFailure(err) {
   return {
     type: FETCH_FAILURE,
@@ -29,7 +29,7 @@ function getMarkersFailure(err) {
   };
 }
 
-// Основная функция
+// Функция для получения списка маркеров
 export default function fetchMarkers(ll) {
   return (dispatch) => {
     // Cначала отправляет экшн ожидания, чтобы можно было крутить спиннеры

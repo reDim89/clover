@@ -8,11 +8,12 @@ const FETCH_FAILURE = 'FETCH_FAILURE';
 
 const initialState = {
   markers: [],
+  markerDetails: {},
   isLoading: false,
   error: false,
 };
 
-export default function fetchMarkersReduce(state = initialState, action) {
+export default function fetchMarkersReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_SUCCESS:
       return {
