@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import { Text, View } from 'react-native';
 import { connect } from 'react-redux';
+import { StackActions, NavigationActions } from 'react-navigation';
 
-import Amplify, { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import config from '../../aws-exports';
 
 import Button from '../components/Button';
 import { logout } from '../redux/actions/authActions';
-
-Amplify.configure(config);
 
 class Profile extends Component {
 
   handleOnPress() {
     Auth.signOut();
     this.props.logout();
+    this.props.navigation.dispatch(resetAction);
   }
 
   render() {
@@ -22,13 +22,18 @@ class Profile extends Component {
       <View>
         <Text>Profile screen - under construction</Text>
         <Button
-          text="Log out"
+          buttonText="Log out"
           onPress={() => this.handleOnPress()}
         />
       </View>
     );
   }
 }
+
+const resetAction = StackActions.reset({
+  index: 0,
+  actions: [NavigationActions.navigate({ routeName: 'Welcome' })],
+});
 
 const mapStateToProps = state => ({
   auth: state.authReducer.auth,

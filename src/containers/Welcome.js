@@ -7,13 +7,18 @@ import {
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
+import { Auth } from 'aws-amplify';
 
 import Button from '../components/Button';
 
 class Welcome extends Component {
+  static getUser() {
+    Auth.currentAuthenticatedUser()
+      .then(user => console.log(user))
+      .catch(error => console.log(error));
+  }
 
   render() {
-    console.log(this.props);
     return (
       <View style={styles.containerStyle}>
         <Text style={styles.headerTextStyle}>
@@ -21,7 +26,7 @@ class Welcome extends Component {
         </Text>
         <Button
           buttonText="Sign In"
-          onPress={() => this.props.navigation.dispatch(goToMainStack)}
+          onPress={() => this.props.navigation.navigate('SignIn')}
         />
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate('SignUp')}
@@ -30,8 +35,15 @@ class Welcome extends Component {
             Sign Up
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Welcome.getUser()}
+        >
+          <Text style={{ color: 'red' }}>
+            Get user
+          </Text>
+        </TouchableOpacity>
       </View>
-    )
+    );
   }
 }
 

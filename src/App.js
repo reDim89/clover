@@ -4,10 +4,13 @@
 
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
+import Amplify from 'aws-amplify';
 
 import store from './redux/store';
 import AppNavigator from './containers/AppNavigator';
-import Map from './containers/Map';
+import awsmobile from '../aws-exports';
+
+Amplify.configure(awsmobile);
 
 export default class App extends Component {
 

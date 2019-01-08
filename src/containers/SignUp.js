@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 // Импорт компонентов, необходимых для регистрации юзеров
-import Amplify, { Auth } from 'aws-amplify';
-import config from '../../aws-exports';
+import { Auth } from 'aws-amplify';
+import awsmobile from '../../aws-exports';
 
 // Импорт вьюх и других компонентов
 import Button from '../components/Button';
@@ -21,8 +21,6 @@ import ToastContainer from './ToastContainer';
 import { login, logout } from '../redux/actions/authActions';
 import { showPopup } from '../redux/actions/popupActions';
 import { showToast } from '../redux/actions/toastActions';
-
-Amplify.configure(config);
 
 class SignUp extends Component {
   static navigationOptions = {

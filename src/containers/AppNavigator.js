@@ -6,18 +6,34 @@ import { StatusBar } from 'react-native';
 
 import Profile from './Profile';
 import SignUp from './SignUp';
+import SignIn from './SignIn';
 import Welcome from './Welcome';
 import Map from './Map';
 
 // Основной стек навигации
-export const NavigationStack = createBottomTabNavigator({
-  Map: {
-    screen: Map,
+export const NavigationStack = createBottomTabNavigator(
+  {
+    Map: {
+      screen: Map,
+    },
+    Profile: {
+      screen: Profile,
+    },
   },
-  Profile: {
-    screen: Profile,
+  {
+    tabBarOptions: {
+      activeBackgroundColor: '#BEE2C2',
+      activeTintColor: '#FFFFFF',
+      labelStyle: {
+        fontSize: 16,
+        textAlign: 'center',
+      },
+      tabStyle: {
+        paddingBottom: 5,
+      },
+    },
   },
-});
+);
 
 // Стек навигации, с которого происходит переход к основному, если юзер залогинился
 export const LoginStack = createStackNavigator(
@@ -30,6 +46,9 @@ export const LoginStack = createStackNavigator(
     },
     SignUp: {
       screen: SignUp,
+    },
+    SignIn: {
+      screen: SignIn,
     },
     NavigationStack: {
       screen: NavigationStack,
