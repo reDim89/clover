@@ -38,24 +38,6 @@ class ModalConfirm extends Component {
     visible: false,
   }
 
-  // Запись данных формы в базу данных
-  // https://facebook.github.io/react-native/docs/network.html
-  static pushToDatabase(username, firstname, lastname) {
-    return fetch('http://52.15.80.99:8000/users', {
-      method: 'POST',
-      headers: {
-        ContentType: 'Application/JSON',
-      },
-      body: JSON.stringify({
-        nickname: username,
-        first_name: firstname,
-        last_name: lastname,
-      }),
-    })
-      .then(response => console.log(response.json()))
-      .catch(error => console.error(error));
-  }
-
   // Функция, скрывающая поп-ап по кнопке
   closeModal() {
     return this.props.closePopup();
@@ -66,14 +48,11 @@ class ModalConfirm extends Component {
     const { authCode } = this.state;
     const {
       username,
-      firstname,
-      lastname,
     } = this.props;
     Auth.confirmSignUp(username, authCode)
       .then(() => {
-        ModalConfirm.pushToDatabase(username, firstname, lastname);
         this.closeModal();
-        this.props.navigation.dispatch(goToMainStack);
+        this.props.navigation.navigate('SignIn');
       })
       .catch(err => console.log(err));
   }
@@ -97,12 +76,12 @@ class ModalConfirm extends Component {
             </Text>
             <Button
               title="Confirm sign up"
-              color="#fff"
+              color="#FFFFFA"
               onPress={() => this.confirmSignup()}
             />
             <Button
               title="Close"
-              color="#fff"
+              color="#FFFFFA"
               onPress={() => this.closeModal()}
             />
           </View>
@@ -150,7 +129,7 @@ const styles = StyleSheet.create({
   textInput: {
     margin: 15,
     height: 40,
-    borderColor: '#673149',
+    borderColor: '#FFFFFA',
     borderWidth: 2,
     borderRadius: 10,
   },
@@ -159,7 +138,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 20,
-    color: '#B2B2B2',
+    color: '#FFFFFA',
   },
 });
 

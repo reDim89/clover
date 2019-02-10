@@ -6,12 +6,14 @@ import {
 } from 'react-native';
 
 import MapView, { Marker, Callout } from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 
 import { connect } from 'react-redux';
 
 import fetchMarkers from '../redux/actions/fetchMarkersActions';
 
 import MarkerContainer from './MarkerContainer';
+import Button from '../components/Button';
 
 const { width, height } = Dimensions.get('window');
 
@@ -31,7 +33,7 @@ class Map extends Component {
 
   // После первого рендера компонента определяем геолокацию и записываем в стейт
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(
+    Geolocation.getCurrentPosition(
       ((position) => {
         this.setState({
           LATITUDE: position.coords.latitude,
@@ -41,50 +43,62 @@ class Map extends Component {
         const ll = `${this.state.LATITUDE},${this.state.LONGITUDE}`;
         this.props.fetchMarkers(ll);
       }),
-      error => console.log(error.message),
+      error => console.log(error),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   }
 
   renderMarkers() {
     const { markers } = this.props;
-    return markers.map(marker => (
-      <Marker
-        key={marker.id}
-        coordinate={{
-          latitude: marker.lat,
-          longitude: marker.lng,
-        }}
-        title={marker.name}
-        pinColor="#94DCD4"
-      >
-        <Callout tooltip {...marker}>
-          <MarkerContainer {...marker} />
-        </Callout>
-      </Marker>
-    ));
+    if (this.state.showMarkers) {
+      return markers.map((marker, index) => (
+        <Marker
+          key={index}
+          coordinate={{
+            latitude: marker.lat,
+            longitude: marker.lng,
+          }}
+          title={marker.name}
+          pinColor="#94DCD4"
+        >
+          <Callout tooltip {...marker}>
+            <MarkerContainer {...marker} />
+          </Callout>
+        </Marker>
+      ));
+    };
+    return null;
   }
 
   render() {
     const { LATITUDE, LONGITUDE } = this.state;
     return (
-      <MapView
-        style={styles.mapStyle}
-        region={{
-          latitude: LATITUDE,
-          longitude: LONGITUDE,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        }}
-        showsUserLocation
-      >
-        {this.renderMarkers()}
-      </MapView>
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          }}
+          showsUserLocation
+        >
+          {this.renderMarkers()}
+        </MapView>
+        <Button
+          onPress={() => this.setState({ showMarkers: true })}
+          buttonText="Show me bars"
+          style={{ position: 'absolute', bottom: 50 }}
+        />
+      </View>
     );
   }
 }
 
 const mapStateToProps = state => ({
   markers: state.fetchMarkersReducer.markers,
+  auth: state.authReducer.auth,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -92,10 +106,21 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const styles = StyleSheet.create({
-  mapStyle: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
 

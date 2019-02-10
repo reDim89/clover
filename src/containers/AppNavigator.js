@@ -10,19 +10,21 @@ import SignIn from './SignIn';
 import Welcome from './Welcome';
 import Map from './Map';
 
+import { login } from '../redux/actions/authActions';
+
 // Основной стек навигации
 export const NavigationStack = createBottomTabNavigator(
   {
     Map: {
       screen: Map,
     },
-    Profile: {
+    About: {
       screen: Profile,
     },
   },
   {
     tabBarOptions: {
-      activeBackgroundColor: '#BEE2C2',
+      activeBackgroundColor: '#44A1A0',
       activeTintColor: '#FFFFFF',
       labelStyle: {
         fontSize: 16,
@@ -62,38 +64,19 @@ export const LoginStack = createStackNavigator(
 );
 
 class AppNavigator extends Component {
-  state = {
-    user: {},
-    isLoading: true,
-  };
-
   async componentDidMount() {
     StatusBar.setHidden(true);
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      this.setState({ user, isLoading: false });
-    } catch (err) {
-      this.setState({ isLoading: false });
-    }
+
+    /*
+    await Auth.currentAuthenticatedUser()
+      .then(() => this.props.login())
+      .catch(err => console.log(err));
+    */
   }
 
-  async componentWillReceiveProps() {
-    try {
-      const user = await Auth.currentAuthenticatedUser();
-      this.setState({ user });
-    } catch (err) {
-      this.setState({ user: {} });
-    }
-  }
 
   render() {
-    if (this.state.isLoading) return null;
-    let loggedIn = false;
-    if (this.state.user.username) {
-      loggedIn = true;
-    }
-
-    if (!this.props.auth) {
+    if (this.props.auth) {
       return (
         <NavigationStack />
       );
@@ -108,8 +91,12 @@ class AppNavigator extends Component {
 const mapStateToProps = (state) => {
   return ({
     // на этот проп завязан метод componentWillReceiveProps
-    auth: state.authReducer,
+    auth: state.authReducer.auth,
   });
 };
 
-export default connect(mapStateToProps)(AppNavigator);
+const mapDispatchToProps = {
+  login,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppNavigator);
