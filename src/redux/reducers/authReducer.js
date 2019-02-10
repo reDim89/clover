@@ -24,16 +24,16 @@ export const CONFIRM_LOGIN_FAILURE = 'CONFIRM_LOGIN_FAILURE';
 
 // Начальное состояние на момент загрузки приложения
 
-const initialState = { buttonText: 'Login', auth: false };
+const initialState = { auth: false };
 
 // Любой редьюсер принимает на вход текущий стэйт и экшн и возвращает новый стэйт
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOG_IN:
-      return { buttonText: 'You are logged in', auth: true };
+      return { auth: true };
     case LOG_OUT:
-      return { buttonText: 'Log in', auth: false };
+      return { auth: false };
     default:
       return state;
   }

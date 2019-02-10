@@ -9,11 +9,13 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 // Импорт компонентов, необходимых для регистрации юзеров
-import Amplify, { Auth } from 'aws-amplify';
-import config from '../../aws-exports';
+import { Auth } from 'aws-amplify';
+import awsmobile from '../../aws-exports';
 
 // Импорт вьюх и других компонентов
+
 import Button from '../components/Button';
+import SignUpForm from '../components/SignUpForm';
 import ModalConfirm from './ModalConfirm';
 import ToastContainer from './ToastContainer';
 
@@ -21,15 +23,14 @@ import ToastContainer from './ToastContainer';
 import { login, logout } from '../redux/actions/authActions';
 import { showPopup } from '../redux/actions/popupActions';
 import { showToast } from '../redux/actions/toastActions';
-
-Amplify.configure(config);
+import LoginForm from './SignIn';
 
 class SignUp extends Component {
   static navigationOptions = {
     title: 'Sign Up',
     headerStyle: {
-      backgroundColor: '#94DCD4',
-      color: '#fff',
+      backgroundColor: '#0D5C63',
+      color: '#FFFFFA',
     },
     headerTintColor: '#fff',
   };
@@ -41,14 +42,15 @@ class SignUp extends Component {
       password: null,
       email: null,
     };
+    this.setUsernameFromInput = this.setUsernameFromInput.bind(this);
+    this.setPassFromInput = this.setPassFromInput.bind(this);
+    this.setEmailFromInput = this.setEmailFromInput.bind(this);
   }
 
   // Вызов поп-апа подтверждения регистрации
   showModalConfirm() {
     const {
       username,
-      firstname,
-      lastname,
       password,
       email,
     } = this.state;
@@ -74,6 +76,18 @@ class SignUp extends Component {
     return this.props.showToast(error, 2000)
   }
 
+  setUsernameFromInput(text) {
+    this.setState({ username: text });
+  }
+
+  setPassFromInput(text) {
+    this.setState({ password: text });
+  }
+
+  setEmailFromInput(text) {
+    this.setState({ email: text });
+  }
+
   render() {
     const {
       username,
@@ -90,51 +104,15 @@ class SignUp extends Component {
           hintText="We have sent confirmation code to your email"
           navigation={this.props.navigation}
         />
-        <View style={styles.inputContainerStyle}>
-          <TextInput
-            style={styles.halfSizeInput}
-            placeholder="First name"
-            autoFocus
-            value={this.state.firstname}
-            onChangeText={text => this.setState({ firstname: text })}
-          />
-          <TextInput
-            style={styles.halfSizeInput}
-            placeholder="Last Name"
-            autoFocus
-            value={this.state.lastname}
-            onChangeText={text => this.setState({ lastname: text })}
-          />
-        </View>
-        <View style={styles.formContainerStyle}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="Login"
-            autoCapitalize="none"
-            autoFocus
-            value={this.state.username}
-            onChangeText={text => this.setState({ username: text })}
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Password"
-            secureTextEntry
-            value={this.state.password}
-            onChangeText={text => this.setState({ password: text })}
-          />
-          <TextInput
-            style={styles.textInput}
-            placeholder="Email"
-            value={this.state.email}
-            onChangeText={text => this.setState({ email: text })}
-          />
-        </View>
-        <View style={styles.buttonContainerStyle}>
-          <Button
-            buttonText="Sign Up"
-            onPress={() => this.showModalConfirm()}
-          />
-        </View>
+        <SignUpForm
+          onChangeUsername={this.setUsernameFromInput}
+          onChangePassword={this.setPassFromInput}
+          onChangeEmail={this.setEmailFromInput}
+        />
+        <Button
+           buttonText="Sign Up"
+           onPress={() => this.showModalConfirm()}
+        />
         <ToastContainer />
       </View>
     );
@@ -189,7 +167,7 @@ const styles = StyleSheet.create({
   },
   containerStyle: {
     flex: 1,
-    backgroundColor: '#94DCD4',
+    backgroundColor: '#0D5C63',
   },
   formContainerStyle: {
     flex: 0.7,
