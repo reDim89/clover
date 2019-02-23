@@ -50,6 +50,7 @@ class Map extends Component {
 
   renderMarkers() {
     const { markers } = this.props;
+    console.log(markers);
     if (this.state.showMarkers) {
       return markers.map((marker, index) => (
         <Marker

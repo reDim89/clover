@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
+  TouchableOpacity, PermissionsAndroid,
 } from 'react-native';
 
 import { NavigationActions } from 'react-navigation';
@@ -16,6 +16,35 @@ class Welcome extends Component {
     Auth.currentAuthenticatedUser()
       .then(user => console.log(user))
       .catch(error => console.log(error));
+  }
+
+  async requestLocationPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message:
+            'Clover needs access to your location ' +
+            'so you can get tips for bars wherever you are.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the location');
+      } else {
+        console.log('Location permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+  async goToMap() {
+    await this.requestLocationPermission();
+    this.props.navigation.navigate('NavigationStack');
   }
 
   render() {
@@ -42,7 +71,7 @@ class Welcome extends Component {
         */}
         <Button
           buttonText="Go to map"
-          onPress={() => this.props.navigation.navigate('NavigationStack')}
+          onPress={() => this.goToMap()}
         />
       </View>
     );
